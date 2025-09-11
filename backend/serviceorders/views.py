@@ -63,3 +63,4 @@ class ServiceOrderViewSet(viewsets.ModelViewSet):
         os_obj.responsible = user
         os_obj.save()
         return Response(ServiceOrderSerializer(os_obj).data)
+ 
