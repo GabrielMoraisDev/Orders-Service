@@ -1,11 +1,12 @@
 from datetime import date
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Q, F
 
 
-class WorkOrder(models.Model):
+class ServiceOrder(models.Model):
     PRIORITY_CHOICES = [
         ('low', 'Baixa'),
         ('medium', 'Média'),
@@ -35,10 +36,10 @@ class WorkOrder(models.Model):
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='open', verbose_name='Status')
 
     from_user = models.ForeignKey(
-        User, related_name='workorders_created', on_delete=models.CASCADE, verbose_name='Usuário solicitante'
+        User, related_name='services_created', on_delete=models.CASCADE, verbose_name='Usuário solicitante'
     )
     responsible = models.ForeignKey(
-        User, related_name='workorders_responsible', on_delete=models.SET_NULL,
+        User, related_name='services_responsible', on_delete=models.SET_NULL,
         null=True, blank=True, verbose_name='Responsável'
     )
     rate = models.PositiveSmallIntegerField(
@@ -61,17 +62,17 @@ class WorkOrder(models.Model):
             # rate entre 1 e 5 quando não nula
             models.CheckConstraint(
                 check=Q(rate__isnull=True) | (Q(rate__gte=1) & Q(rate__lte=5)),
-                name='workorder_rate_1_5_or_null',
+                name='service_rate_1_5_or_null',
             ),
             # start_date <= predicted_date
             models.CheckConstraint(
                 check=Q(start_date__lte=F('predicted_date')),
-                name='workorder_start_lte_predicted',
+                name='service_start_lte_predicted',
             ),
             # completion_date >= start_date quando houver
             models.CheckConstraint(
                 check=Q(completion_date__isnull=True) | Q(completion_date__gte=F('start_date')),
-                name='workorder_completion_gte_start_or_null',
+                name='service_completion_gte_start_or_null',
             ),
         ]
 
