@@ -1,5 +1,8 @@
+from datetime import date
+from django.contrib.auth.models import User
+from django.db.models import Q
 from rest_framework import viewsets
-from rest_framework.permissions import DjangoModelPermissions
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
@@ -9,14 +12,33 @@ from serviceorders.serializers import ServiceOrderSerializer
 
 
 class ServiceOrderViewSet(viewsets.ModelViewSet):
+
     queryset = ServiceOrder.objects.select_related('from_user', 'responsible')
     serializer_class = ServiceOrderSerializer
-    permission_classes = [DjangoModelPermissions]
-
+    permission_classes = [IsAuthenticated]
     filterset_fields = ['status', 'priority', 'from_user', 'responsible', 'predicted_date']
     ordering_fields = ['created_at', 'updated_at', 'predicted_date', 'completion_date', 'days_delay', 'priority']
     ordering = ['-created_at']
     search_fields = ['title', 'description', 'resolved']
+    from django_filters.rest_framework import DjangoFilterBackend
+    filter_backends = [DjangoFilterBackend]
+
+    def get_queryset(self):
+        """
+        Filtra as ordens de serviço baseado no usuário:
+        - Admin: vê todas as ordens
+        - Usuário comum: vê apenas ordens que criou ou é responsável
+        """
+        queryset = ServiceOrder.objects.select_related('from_user', 'responsible')
+        user = self.request.user
+        
+        # Se não é admin, filtra para mostrar apenas suas ordens
+        if user and not user.is_staff:
+            queryset = queryset.filter(
+                Q(from_user=user) | Q(responsible=user)
+            )
+        
+        return queryset
 
     @action(detail=True, methods=['post'])
     def close(self, request, pk=None):

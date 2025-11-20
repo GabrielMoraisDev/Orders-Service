@@ -8,4 +8,5 @@ urlpatterns = [
 
     path('api/', include('authentication.urls')),
     path('api/v1/', include('serviceorders.urls')),
+    path('api/ai/', include('aichat.urls')),
 ]
