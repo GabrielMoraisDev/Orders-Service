@@ -1,6 +1,32 @@
-# Sistema de Ordem de Serviço (O.S) - Documentação Backend
+# Sistema de Ordem de Serviço (O.S)
 
 ## Visão Geral
+
+Sistema completo de gerenciamento de Ordens de Serviço com backend Django e frontend Next.js.
+
+## 🚀 Quick Start com Docker
+
+Para rodar o projeto completo com Docker:
+
+```bash
+# 1. Configure as variáveis de ambiente
+cp .env.example .env
+# Edite o .env com suas configurações
+
+# 2. Inicie os containers
+docker-compose up -d
+
+# 3. Acesse as aplicações
+# Frontend: http://localhost:3000
+# Backend: http://localhost:8000
+# Admin: http://localhost:8000/admin
+```
+
+**📖 Documentação completa do Docker:** Veja [DOCKER.md](DOCKER.md) para instruções detalhadas.
+
+---
+
+## Documentação Backend
 
 Este documento especifica a estrutura do backend para o sistema de Ordem de Serviço (O.S), incluindo endpoints, relacionamentos de banco de dados e regras de negócio.
 
